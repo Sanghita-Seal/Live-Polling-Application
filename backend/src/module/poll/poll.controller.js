@@ -23,14 +23,21 @@ const getMyPolls = async (req, res) => {
   const polls = await pollService.getMyPolls(req.user.id);
 
   ApiResponse.ok(res, "Polls fetched successfully", polls);
-
 };
 
-const getPollById = async (req, res)=>{
-    const poll = await pollService.getPollById({
-        pollId: req.params.pollId,
-        userId: req.user.id,
-    })
-}
+const getPollById = async (req, res) => {
+  const poll = await pollService.getPollById({
+    pollId: req.params.pollId,
+    userId: req.user.id,
+  });
+};
+const updatePoll = async (req, res) => {
+  const poll = await pollService.updatePoll({
+    pollId: req.params.pollId,
+    userId: req.user.id,
+    ...req.body,
+  });
+  ApiResponse.ok(res, "Poll updated successfully", poll);
+};
 
-export {createPoll, createQuestion, getMyPolls, getPollById};
+export { createPoll, createQuestion, getMyPolls, getPollById , updatePoll};
