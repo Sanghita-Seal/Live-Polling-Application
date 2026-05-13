@@ -12,7 +12,7 @@ const getPublicPollByShareCode = async (shareCode) => {
     .lean();
 
   return {
-    pol: {
+    poll: {
       id: poll._id,
       pollName: poll.pollName,
       pollDescription: poll.pollDescription,
