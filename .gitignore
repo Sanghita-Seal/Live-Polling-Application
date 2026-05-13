@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+frontend/.env
+backend/.env
+
+# Build output
+dist/
+build/
+frontend/dist/
+backend/dist/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime / cache
+.cache/
+.vite/
+frontend/node_modules/.vite/
+coverage/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Lock files - keep these if using npm consistently
+# package-lock.json
+
+# Optional package manager locks
+bun.lock
+yarn.lock
+pnpm-lock.yaml
