@@ -5,5 +5,6 @@ const router = Router();
 
 
 router.get("/polls/:shareCode", controller.getPublicPoll);
+router.get("/analytics/:analyticsCode", controller.getPublicAnalytics);
 
 export default router;

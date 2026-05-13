@@ -6,5 +6,13 @@ const getPublicPoll = async (req, res) => {
 
   ApiResponse.ok(res, "Poll fetched successfully", poll);
 };
+const getPublicAnalytics = async (req, res) => {
+  const analytics = await publicService.getPublicAnalyticsByCode(
+    req.params.analyticsCode,
+  );
 
-export { getPublicPoll };
+  ApiResponse.ok(res, "Analytics fetched successfully", analytics);
+};
+
+
+export { getPublicPoll , getPublicAnalytics};
