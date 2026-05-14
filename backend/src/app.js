@@ -5,15 +5,37 @@ import ApiError from "./common/utils/api-error.js";
 import pollRoute from "./module/poll/poll.routes.js"
 import publicRoute from "./module/public/public.routes.js"
 import voteRoute from "./module/vote/vote.routes.js";
+import cors from "cors";
+
 
 
 const app =express();
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
+
+
+
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is working" });
+});
+
+
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
+
+
 app.use("/api/auth", authRoute);
 app.use("/api/polls", pollRoute);
 app.use("/api/public", publicRoute);

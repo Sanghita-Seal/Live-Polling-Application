@@ -2,8 +2,20 @@ import axios from "axios";
 import { API_ENDPOINTS } from "./endpoints";
 import { authStorage } from "../features/auth/auth.storage";
 
+function resolveApiBaseUrl() {
+  const raw = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (!raw) {
+    return "/api";
+  }
+  if (raw.startsWith("http://") || raw.startsWith("https://")) {
+    const origin = raw.replace(/\/+$/, "");
+    return origin.endsWith("/api") ? origin : `${origin}/api`;
+  }
+  return raw;
+}
+
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+  baseURL: resolveApiBaseUrl(),
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
