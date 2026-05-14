@@ -247,13 +247,22 @@ function PollBuilder() {
                   End poll
                 </GradientButton>
               ) : null}
+              {poll?.status === "active" ? (
+                <GradientButton as={Link} to={`/polls/${pollId}/realtime`}>
+                  See realtime updates
+                </GradientButton>
+              ) : null}
               {poll?.status === "ended" && !poll?.isResultPublished ? (
                 <GradientButton type="button" onClick={publishResults} isLoading={isPublishingResults}>
                   Publish results
                 </GradientButton>
               ) : null}
-              {poll?.isResultPublished ? <span className="muted-text">Results published</span> : null}
-              {poll?.status === "ended" ? (
+              {poll?.isResultPublished ? (
+                <GradientButton as={Link} to={`/p/${poll?.shareCode}`}>
+                  View final result
+                </GradientButton>
+              ) : null}
+              {poll?.status === "ended" && poll?.isResultPublished ? (
                 <button
                   type="button"
                   className="ghost-button result-link-button"
@@ -261,7 +270,8 @@ function PollBuilder() {
                 >
                   Copy final result link
                 </button>
-              ) : (
+              ) : null}
+              {poll?.status !== "ended" ? (
                 <button
                   type="button"
                   className="ghost-button"
@@ -269,14 +279,16 @@ function PollBuilder() {
                 >
                   Copy vote link
                 </button>
-              )}
-              <button
-                type="button"
-                className="ghost-button"
-                onClick={() => copyToClipboard(getAnalyticsUrl(poll?.analyticsCode), "Analytics link")}
-              >
-                Copy analytics
-              </button>
+              ) : null}
+              {poll?.status === "ended" ? (
+                <button
+                  type="button"
+                  className="ghost-button"
+                  onClick={() => copyToClipboard(getAnalyticsUrl(poll?.analyticsCode), "Analytics link")}
+                >
+                  Copy analytics
+                </button>
+              ) : null}
             </div>
           </div>
         </GlassCard>

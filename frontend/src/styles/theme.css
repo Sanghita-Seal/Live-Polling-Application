@@ -600,6 +600,20 @@
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
 }
 
+.realtime-chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: 16px;
+}
+
+.chart-panel {
+  min-height: 280px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
 .toast-stack {
   position: fixed;
   right: 18px;
@@ -678,6 +692,7 @@
   .dashboard-layout,
   .stats-grid,
   .builder-grid,
+  .realtime-chart-grid,
   .two-column-form {
     grid-template-columns: 1fr;
   }

@@ -49,17 +49,11 @@ const getPublicPollByShareCode = async (shareCode) => {
     })),
   };
 };
-const getPublicAnalyticsByCode = async (analyticsCode) => {
-  const pollDoc = await Poll.findOne({ analyticsCode });
 
-  if (!pollDoc) {
-    throw ApiError.notFound("Poll not found");
-  }
-
+const buildAnalyticsPayload = async (pollDoc) => {
   await expirePollIfNeeded(pollDoc);
 
   const poll = pollDoc.toObject();
-
   const questions = await Question.find({ pollId: poll._id })
     .sort({ questionNumber: 1 })
     .lean();
@@ -99,5 +93,40 @@ const getPublicAnalyticsByCode = async (analyticsCode) => {
   };
 };
 
-export { getPublicPollByShareCode, getPublicAnalyticsByCode };
+const getPublicAnalyticsByCode = async (analyticsCode) => {
+  const pollDoc = await Poll.findOne({ analyticsCode });
+
+  if (!pollDoc) {
+    throw ApiError.notFound("Poll not found");
+  }
+
+  return buildAnalyticsPayload(pollDoc);
+};
+
+const getCreatorAnalyticsByPollId = async ({ pollId, userId }) => {
+  const pollDoc = await Poll.findOne({ _id: pollId, createdBy: userId });
+
+  if (!pollDoc) {
+    throw ApiError.notFound("Poll not found");
+  }
+
+  return buildAnalyticsPayload(pollDoc);
+};
+
+const getAnalyticsByPollId = async (pollId) => {
+  const pollDoc = await Poll.findById(pollId);
+
+  if (!pollDoc) {
+    throw ApiError.notFound("Poll not found");
+  }
+
+  return buildAnalyticsPayload(pollDoc);
+};
+
+export {
+  getPublicPollByShareCode,
+  getPublicAnalyticsByCode,
+  getCreatorAnalyticsByPollId,
+  getAnalyticsByPollId,
+};
 

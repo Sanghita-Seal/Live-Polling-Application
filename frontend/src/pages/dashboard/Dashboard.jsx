@@ -20,6 +20,7 @@ function Dashboard() {
   const [polls, setPolls] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [publishingPollId, setPublishingPollId] = useState("");
   const totalVotes = polls.reduce((sum, poll) => sum + (poll.totalVotes || 0), 0);
   const livePolls = polls.filter((poll) => poll.status === "active").length;
 
@@ -45,6 +46,28 @@ function Dashboard() {
     }
 
     showToast({ type: "error", title: "Copy failed", message: "Please copy the link manually." });
+  };
+
+  const publishFinalResults = async (pollId) => {
+    setPublishingPollId(pollId);
+
+    try {
+      const response = await pollService.publishResults(pollId);
+      setPolls((current) => current.map((poll) => (getPollId(poll) === pollId ? response.data : poll)));
+      showToast({
+        type: "success",
+        title: "Results published",
+        message: "The public poll link now shows final results.",
+      });
+    } catch (err) {
+      showToast({
+        type: "error",
+        title: "Publish failed",
+        message: getErrorMessage(err, "Failed to publish final results"),
+      });
+    } finally {
+      setPublishingPollId("");
+    }
   };
 
   return (
@@ -123,33 +146,77 @@ function Dashboard() {
                     </div>
 
                     <div className="poll-actions">
-                      {poll.status === "ended" ? (
+                      {poll.status !== "ended" || !poll.isResultPublished ? (
+                        <GradientButton as={Link} to={`/polls/${pollId}/builder`}>
+                          Manage
+                        </GradientButton>
+                      ) : null}
+
+                      {poll.status === "active" ? (
+                        <>
+                          <button
+                            type="button"
+                            className="ghost-button"
+                            onClick={() => copyToClipboard(getPublicPollUrl(poll.shareCode), "Vote link")}
+                          >
+                            Copy vote link
+                          </button>
+                          <GradientButton as={Link} to={`/polls/${pollId}/realtime`}>
+                            See realtime updates
+                          </GradientButton>
+                        </>
+                      ) : null}
+
+                      {poll.status === "draft" ? (
                         <button
                           type="button"
-                          className="ghost-button result-link-button"
-                          onClick={() => copyToClipboard(getPublicPollUrl(poll.shareCode), "Final result link")}
+                          className="ghost-button"
+                          onClick={() => copyToClipboard(getPublicPollUrl(poll.shareCode), "Vote link")}
                         >
-                          Copy final result link
+                          Copy vote link
                         </button>
-                      ) : (
-                      <button
-                        type="button"
-                        className="ghost-button"
-                        onClick={() => copyToClipboard(getPublicPollUrl(poll.shareCode), "Vote link")}
-                      >
-                        Copy vote link
-                      </button>
-                      )}
-                      <button
-                        type="button"
-                        className="ghost-button"
-                        onClick={() => copyToClipboard(getAnalyticsUrl(poll.analyticsCode), "Analytics link")}
-                      >
-                        Copy analytics
-                      </button>
-                      <GradientButton as={Link} to={`/polls/${pollId}/builder`}>
-                        Manage
-                      </GradientButton>
+                      ) : null}
+
+                      {poll.status === "ended" && !poll.isResultPublished ? (
+                        <>
+                          <button
+                            type="button"
+                            className="ghost-button"
+                            onClick={() => copyToClipboard(getAnalyticsUrl(poll.analyticsCode), "Analytics link")}
+                          >
+                            Copy analytics
+                          </button>
+                          <GradientButton
+                            type="button"
+                            onClick={() => publishFinalResults(pollId)}
+                            isLoading={publishingPollId === pollId}
+                          >
+                            Publish final result
+                          </GradientButton>
+                        </>
+                      ) : null}
+
+                      {poll.status === "ended" && poll.isResultPublished ? (
+                        <>
+                          <button
+                            type="button"
+                            className="ghost-button"
+                            onClick={() => copyToClipboard(getAnalyticsUrl(poll.analyticsCode), "Analytics link")}
+                          >
+                            Copy analytics
+                          </button>
+                          <button
+                            type="button"
+                            className="ghost-button result-link-button"
+                            onClick={() => copyToClipboard(getPublicPollUrl(poll.shareCode), "Final result link")}
+                          >
+                            Copy final result link
+                          </button>
+                          <GradientButton as={Link} to={`/p/${poll.shareCode}`}>
+                            View final result
+                          </GradientButton>
+                        </>
+                      ) : null}
                     </div>
                   </div>
                   );

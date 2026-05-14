@@ -1,4 +1,5 @@
 import ApiResponse from "../../common/utils/api-response.js";
+import { getCreatorAnalyticsByPollId } from "../public/public.service.js";
 import * as pollService from "./poll.service.js";
 
 const createPoll = async (req, res) => {
@@ -50,4 +51,13 @@ const publishResults = async (req, res) => {
   ApiResponse.ok(res, "Poll results published successfully", poll);
 };
 
-export { createPoll, createQuestion, getMyPolls, getPollById, updatePoll, publishResults};
+const getPollAnalytics = async (req, res) => {
+  const analytics = await getCreatorAnalyticsByPollId({
+    pollId: req.params.pollId,
+    userId: req.user.id,
+  });
+
+  ApiResponse.ok(res, "Poll analytics fetched successfully", analytics);
+};
+
+export { createPoll, createQuestion, getMyPolls, getPollById, updatePoll, publishResults, getPollAnalytics};

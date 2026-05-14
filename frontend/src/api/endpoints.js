@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     create: "/polls",
     myPolls: "/polls/my-polls",
     byId: (pollId)=> `/polls/${pollId}`,
+    realtimeAnalytics: (pollId)=> `/polls/${pollId}/analytics`,
     publishResults: (pollId)=> `/polls/${pollId}/publish-results`,
     question: (pollId)=> `/polls/${pollId}/question`,
     publicPoll: (shareCode)=> `/public/polls/${shareCode}`,

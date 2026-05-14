@@ -22,6 +22,7 @@ function PublicPoll() {
   const [answers, setAnswers] = useState({});
   const [voter, setVoter] = useState({ firstName: "", lastName: "" });
   const [submittedQuestions, setSubmittedQuestions] = useState([]);
+  const [submittingQuestionIds, setSubmittingQuestionIds] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -31,12 +32,17 @@ function PublicPoll() {
   const isComplete =
     questions.length > 0 && requiredQuestions.every((question) => Boolean(answers[getPollId(question)]));
   const submittedSet = useMemo(() => new Set(submittedQuestions), [submittedQuestions]);
+  const submittingSet = useMemo(() => new Set(submittingQuestionIds), [submittingQuestionIds]);
   const hasSubmitted =
     questions.length > 0 &&
-    questions.every((question) => {
-      const questionId = getPollId(question);
-      return submittedSet.has(questionId) || !answers[questionId];
-    });
+    submittedQuestions.length > 0 &&
+    (requiredQuestions.length > 0
+      ? requiredQuestions.every((question) => submittedSet.has(getPollId(question)))
+      : questions.every((question) => submittedSet.has(getPollId(question))));
+  const hasPendingAnswers = questions.some((question) => {
+    const questionId = getPollId(question);
+    return Boolean(answers[questionId]) && !submittedSet.has(questionId);
+  });
 
   const votedSet = submittedSet;
 
@@ -67,14 +73,63 @@ function PublicPoll() {
     });
   }, [isAuthenticated, isBootstrapping, isLoading, location, navigate, poll]);
 
+  const markQuestionSubmitted = (questionId) => {
+    setSubmittedQuestions((current) => {
+      if (current.includes(questionId)) {
+        return current;
+      }
+
+      return [...current, questionId];
+    });
+  };
+
+  const submitQuestionVote = async (questionId, optionId) => {
+    if (votedSet.has(questionId) || submittingSet.has(questionId)) {
+      return;
+    }
+
+    setSubmittingQuestionIds((current) => [...current, questionId]);
+    setError("");
+
+    try {
+      await pollService.submitVote(
+        {
+          pollId: getPollId(poll),
+          questionId,
+          optionId,
+          userFingerPrint: getVoterFingerprint(),
+          firstName: voter.firstName || undefined,
+          lastName: voter.lastName || undefined,
+        },
+        {
+          skipAuth: Boolean(poll?.isAnonymousAllowed),
+          skipRefresh: Boolean(poll?.isAnonymousAllowed),
+        },
+      );
+
+      markQuestionSubmitted(questionId);
+      showToast({ type: "success", title: "Vote recorded" });
+    } catch (err) {
+      setAnswers((current) => {
+        const next = { ...current };
+        delete next[questionId];
+        return next;
+      });
+      setError(getErrorMessage(err, "Vote submission failed"));
+    } finally {
+      setSubmittingQuestionIds((current) => current.filter((id) => id !== questionId));
+    }
+  };
+
   const selectAnswer = (questionId, optionId) => {
     setAnswers((current) => ({ ...current, [questionId]: optionId }));
+    submitQuestionVote(questionId, optionId);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!isComplete) {
+    if (!isComplete && !hasPendingAnswers) {
       showToast({ type: "error", title: "Answer all mandatory questions first" });
       return;
     }
@@ -85,6 +140,8 @@ function PublicPoll() {
     try {
       const pollId = getPollId(poll);
       const userFingerPrint = getVoterFingerprint();
+
+      let submittedCount = 0;
 
       for (const question of questions) {
         const questionId = getPollId(question);
@@ -108,10 +165,13 @@ function PublicPoll() {
           skipAuth: Boolean(poll?.isAnonymousAllowed),
           skipRefresh: Boolean(poll?.isAnonymousAllowed),
         });
-        setSubmittedQuestions((current) => [...current, questionId]);
+        submittedCount += 1;
+        markQuestionSubmitted(questionId);
       }
 
-      showToast({ type: "success", title: "Vote submitted", message: "Thanks for participating." });
+      if (submittedCount > 0) {
+        showToast({ type: "success", title: "Vote submitted", message: "Thanks for participating." });
+      }
     } catch (err) {
       setError(getErrorMessage(err, "Vote submission failed"));
     } finally {
@@ -248,15 +308,22 @@ function PublicPoll() {
                   <div className="option-grid">
                     {question.options.map((option) => {
                       const optionId = getOptionId(option);
+                      const isSubmitted = submittedSet.has(questionId);
+                      const isSubmittingQuestion = submittingSet.has(questionId);
                       return (
                         <label className="option-tile" key={optionId}>
                           <input
                             type="radio"
                             name={questionId}
                             checked={answers[questionId] === optionId}
+                            disabled={isSubmitted || isSubmittingQuestion}
                             onChange={() => selectAnswer(questionId, optionId)}
                           />
-                          <span>{option.text}</span>
+                          <span>
+                            {option.text}
+                            {answers[questionId] === optionId && isSubmittingQuestion ? " - recording..." : ""}
+                            {answers[questionId] === optionId && isSubmitted ? " - recorded" : ""}
+                          </span>
                         </label>
                       );
                     })}
@@ -265,8 +332,8 @@ function PublicPoll() {
               );
             })}
 
-            <GradientButton type="submit" isLoading={isSubmitting} disabled={!isComplete || hasSubmitted}>
-              Submit vote
+            <GradientButton type="submit" isLoading={isSubmitting} disabled={!hasPendingAnswers || hasSubmitted}>
+              Submit selected votes
             </GradientButton>
           </form>
         )}

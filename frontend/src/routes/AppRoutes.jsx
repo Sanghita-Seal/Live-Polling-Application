@@ -12,6 +12,7 @@ import CreatePoll from "../pages/polls/CreatePoll.jsx";
 import PollBuilder from "../pages/polls/PollBuilder.jsx";
 import PublicPoll from "../pages/polls/PublicPoll.jsx";
 import PollAnalytics from "../pages/polls/PollAnalytics.jsx";
+import RealtimePollUpdates from "../pages/polls/RealtimePollUpdates.jsx";
 
 function AppRoutes() {
   return (
@@ -48,6 +49,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <PollBuilder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/polls/:pollId/realtime"
+          element={
+            <ProtectedRoute>
+              <RealtimePollUpdates />
             </ProtectedRoute>
           }
         />
