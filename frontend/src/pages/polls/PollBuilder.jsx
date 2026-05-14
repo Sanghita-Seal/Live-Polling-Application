@@ -180,6 +180,22 @@ function PollBuilder() {
     );
   }
 
+  if (error && !poll) {
+    return (
+      <PageWrapper>
+        <main className="dashboard-main narrow-main">
+          <GlassCard>
+            <h2>Poll could not be opened</h2>
+            <p className="form-error">{error}</p>
+            <GradientButton as={Link} to="/dashboard" className="small-button">
+              Back to dashboard
+            </GradientButton>
+          </GlassCard>
+        </main>
+      </PageWrapper>
+    );
+  }
+
   return (
     <PageWrapper>
       <main className="dashboard-main narrow-main">
@@ -265,7 +281,7 @@ function PollBuilder() {
                   name="pollDurationInMinutes"
                   type="number"
                   min="1"
-                  max="30"
+                  max="60"
                   value={settings.pollDurationInMinutes}
                   onChange={handleSettingsChange}
                   required

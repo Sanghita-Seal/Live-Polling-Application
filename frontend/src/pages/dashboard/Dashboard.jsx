@@ -12,7 +12,7 @@ import StatusBadge from "../../components/ui/StatusBadge.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useToast } from "../../context/ToastContext.jsx";
 import { copyText } from "../../utils/clipboard.utils.js";
-import { formatDateTime, getAnalyticsUrl, getPublicPollUrl } from "../../utils/poll.utils.js";
+import { formatDateTime, getAnalyticsUrl, getPollId, getPublicPollUrl } from "../../utils/poll.utils.js";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -104,8 +104,11 @@ function Dashboard() {
               />
             ) : (
               <div className="poll-list">
-                {polls.map((poll) => (
-                  <div className="poll-row" key={poll._id}>
+                {polls.map((poll) => {
+                  const pollId = getPollId(poll);
+
+                  return (
+                  <div className="poll-row" key={pollId}>
                     <div className="poll-row-main">
                       <div className="poll-title-line">
                         <h3>{poll.pollName}</h3>
@@ -134,12 +137,13 @@ function Dashboard() {
                       >
                         Copy analytics
                       </button>
-                      <GradientButton as={Link} to={`/polls/${poll._id}/builder`}>
+                      <GradientButton as={Link} to={`/polls/${pollId}/builder`}>
                         Manage
                       </GradientButton>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </GlassCard>

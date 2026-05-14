@@ -68,9 +68,7 @@ const getPollById = async ({ pollId, userId }) => {
     throw ApiError.notFound("Poll not found");
   }
 
-  const questions = (await Question.find({ pollId })).sort({
-    questionNumber: 1,
-  });
+  const questions = await Question.find({ pollId }).sort({ questionNumber: 1 });
 
   return {
     poll,
