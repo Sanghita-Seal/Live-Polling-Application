@@ -13,7 +13,7 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use((config) => {
   const accessToken = authStorage.getAccessToken();
 
-  if (accessToken) {
+  if (accessToken && !config.skipAuth) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
 
@@ -29,6 +29,7 @@ axiosClient.interceptors.response.use(
       error.response?.status === 401 &&
       originalRequest &&
       !originalRequest._retry &&
+      !originalRequest.skipRefresh &&
       !originalRequest.url?.includes(API_ENDPOINTS.auth.refreshToken)
     ) {
       originalRequest._retry = true;

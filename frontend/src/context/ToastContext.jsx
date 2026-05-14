@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createId } from "../utils/id.utils";
 
 const ToastContext = createContext(null);
 
@@ -12,7 +13,7 @@ export function ToastProvider({ children }) {
 
   const showToast = useCallback(
     ({ title, message = "", type = "info" }) => {
-      const id = crypto.randomUUID();
+      const id = createId();
       setToasts((current) => [...current, { id, title, message, type }]);
       window.setTimeout(() => removeToast(id), 4200);
     },

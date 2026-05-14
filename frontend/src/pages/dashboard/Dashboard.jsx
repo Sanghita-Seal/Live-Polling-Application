@@ -11,6 +11,7 @@ import GradientButton from "../../components/ui/GradientButton.jsx";
 import StatusBadge from "../../components/ui/StatusBadge.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useToast } from "../../context/ToastContext.jsx";
+import { copyText } from "../../utils/clipboard.utils.js";
 import { formatDateTime, getAnalyticsUrl, getPublicPollUrl } from "../../utils/poll.utils.js";
 
 function Dashboard() {
@@ -38,12 +39,12 @@ function Dashboard() {
   }, []);
 
   const copyToClipboard = async (value, label) => {
-    try {
-      await navigator.clipboard.writeText(value);
+    if (await copyText(value)) {
       showToast({ type: "success", title: `${label} copied` });
-    } catch {
-      showToast({ type: "error", title: "Copy failed", message: "Your browser blocked clipboard access." });
+      return;
     }
+
+    showToast({ type: "error", title: "Copy failed", message: "Please copy the link manually." });
   };
 
   return (

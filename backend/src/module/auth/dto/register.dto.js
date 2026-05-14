@@ -6,7 +6,7 @@ class RegisterDto extends BaseDto {
     name: Joi.string().trim().min(2).max(50).required(),
     email: Joi.string().email().lowercase().required(),
     password: Joi.string()
-      .min(5)
+      .min(8)
       .pattern(/(?=.*[A-Z])(?=.*\d)/)
       .message(
         "Password must contain at least one uppercase letter and one digit",

@@ -1,3 +1,5 @@
+import { createId } from "./id.utils";
+
 const FINGERPRINT_KEY = "live_poll_fingerprint";
 
 export function getPollId(poll) {
@@ -23,7 +25,7 @@ export function getVoterFingerprint() {
     return existing;
   }
 
-  const fingerprint = crypto.randomUUID();
+  const fingerprint = createId();
   localStorage.setItem(FINGERPRINT_KEY, fingerprint);
   return fingerprint;
 }

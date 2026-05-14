@@ -25,6 +25,32 @@ const authenticate = async (req, res, next)=>{
     next();
 };
 
+const optionalAuthenticate = async (req, res, next) => {
+    let token;
+
+    if(req.headers.authorization?.startsWith("Bearer ")){
+        token = req.headers.authorization.split(" ")[1];
+    }
+
+    if(!token) {
+        return next();
+    }
+
+    const decoded = verifyAcccessToken(token);
+    const user = await User.findById(decoded.id);
+
+    if(user) {
+        req.user = {
+            id: user._id,
+            role: user.role,
+            name: user.name,
+            email: user.email,
+        };
+    }
+
+    next();
+};
+
 
 const authorize = (...roles)=>{
     return (req, res, next)=>{
@@ -35,4 +61,4 @@ const authorize = (...roles)=>{
     }
 }
 
-export {authenticate, authorize};
+export {authenticate, optionalAuthenticate, authorize};

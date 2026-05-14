@@ -20,4 +20,13 @@ app.use("/api/votes", voteRoute);
 app.all("{*path}", (req,res)=>{
     throw ApiError.notFound(`Route ${req.originalUrl} not found`);
 })
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
+
 export default app;

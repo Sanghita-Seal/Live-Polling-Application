@@ -28,14 +28,23 @@ export const pollService ={
         return axiosClient.post(API_ENDPOINTS.polls.question(pollId), payload);
     },
     getPublicPoll(shareCode) {
-    return axiosClient.get(API_ENDPOINTS.polls.publicPoll(shareCode));
+    return axiosClient.get(API_ENDPOINTS.polls.publicPoll(shareCode), {
+      skipAuth: true,
+      skipRefresh: true,
+    });
   },
 
-  submitVote(payload) {
-    return axiosClient.post(API_ENDPOINTS.polls.vote, payload);
+  submitVote(payload, options = {}) {
+    return axiosClient.post(API_ENDPOINTS.polls.vote, payload, {
+      skipAuth: Boolean(options.skipAuth),
+      skipRefresh: Boolean(options.skipRefresh),
+    });
   },
 
   getAnalytics(analyticsCode) {
-    return axiosClient.get(API_ENDPOINTS.polls.analytics(analyticsCode));
+    return axiosClient.get(API_ENDPOINTS.polls.analytics(analyticsCode), {
+      skipAuth: true,
+      skipRefresh: true,
+    });
   },
 };

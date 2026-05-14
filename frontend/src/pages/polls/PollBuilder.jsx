@@ -6,6 +6,7 @@ import GradientButton from "../../components/ui/GradientButton.jsx";
 import StatusBadge from "../../components/ui/StatusBadge.jsx";
 import { useToast } from "../../context/ToastContext.jsx";
 import { pollService } from "../../features/polls/polls.service.js";
+import { copyText } from "../../utils/clipboard.utils.js";
 import { getErrorMessage } from "../../utils/errorHandler.js";
 import { formatDateTime, getAnalyticsUrl, getPublicPollUrl } from "../../utils/poll.utils.js";
 
@@ -131,12 +132,12 @@ function PollBuilder() {
   };
 
   const copyToClipboard = async (value, label) => {
-    try {
-      await navigator.clipboard.writeText(value);
+    if (await copyText(value)) {
       showToast({ type: "success", title: `${label} copied` });
-    } catch {
-      showToast({ type: "error", title: "Copy failed", message: "Your browser blocked clipboard access." });
+      return;
     }
+
+    showToast({ type: "error", title: "Copy failed", message: "Please copy the link manually." });
   };
 
   const handleSubmit = async (event) => {

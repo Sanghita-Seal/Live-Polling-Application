@@ -78,6 +78,9 @@ function PublicPoll() {
           userFingerPrint,
           firstName: voter.firstName || undefined,
           lastName: voter.lastName || undefined,
+        }, {
+          skipAuth: Boolean(poll?.isAnonymousAllowed),
+          skipRefresh: Boolean(poll?.isAnonymousAllowed),
         });
         setSubmittedQuestions((current) => [...current, questionId]);
       }
