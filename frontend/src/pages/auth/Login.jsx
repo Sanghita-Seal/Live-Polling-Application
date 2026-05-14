@@ -3,12 +3,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import GradientButton from "../../components/ui/GradientButton.jsx";
 import GlassCard from "../../components/ui/GlassCard.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { useToast } from "../../context/ToastContext.jsx";
 import { getErrorMessage } from "../../utils/errorHandler";
 
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
+  const { showToast } = useToast();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,6 +28,7 @@ function Login() {
 
     try {
       await login(form);
+      showToast({ type: "success", title: "Signed in" });
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(getErrorMessage(err, "Login failed"));

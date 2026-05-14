@@ -10,6 +10,8 @@ import VerifyEmail from "../pages/auth/VerifyEmail.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import CreatePoll from "../pages/polls/CreatePoll.jsx";
 import PollBuilder from "../pages/polls/PollBuilder.jsx";
+import PublicPoll from "../pages/polls/PublicPoll.jsx";
+import PollAnalytics from "../pages/polls/PollAnalytics.jsx";
 
 function AppRoutes() {
   return (
@@ -49,6 +51,8 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route path="/p/:shareCode" element={<PublicPoll />} />
+        <Route path="/analytics/:analyticsCode" element={<PollAnalytics />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

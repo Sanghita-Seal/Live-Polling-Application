@@ -4,10 +4,12 @@ import GradientButton from "../../components/ui/GradientButton.jsx";
 import GlassCard from "../../components/ui/GlassCard.jsx";
 import { AUTH_ROLES } from "../../features/auth/auth.constants";
 import { authService } from "../../features/auth/auth.service";
+import { useToast } from "../../context/ToastContext.jsx";
 import { getErrorMessage } from "../../utils/errorHandler";
 
 function Register() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -28,6 +30,7 @@ function Register() {
 
     try {
       await authService.register(form);
+      showToast({ type: "success", title: "Account created", message: "You can sign in now." });
       navigate("/login", { replace: true });
     } catch (err) {
       setError(getErrorMessage(err, "Registration failed"));

@@ -15,6 +15,7 @@ function Navbar() {
         {isAuthenticated ? (
           <>
             <NavLink to="/dashboard">Dashboard</NavLink>
+            <NavLink to="/polls/create">Create</NavLink>
             <GradientButton type="button" className="small-button" onClick={logout}>
               Logout
             </GradientButton>

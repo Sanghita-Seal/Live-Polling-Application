@@ -12,7 +12,8 @@ function Home() {
           <p className="eyebrow">Live Poll</p>
           <h1>Simple polling for classrooms, teams, and events.</h1>
           <p>
-            Create your account, sign in, and land in a clean dashboard ready for the next poll features.
+            Create timed polls, publish a voting link, collect one vote per participant, and share analytics with a
+            private results URL.
           </p>
 
           <div className="hero-actions">
@@ -28,8 +29,8 @@ function Home() {
         <section className="home-preview" aria-label="Dashboard preview">
           <div className="preview-card">
             <span className="status-dot" />
-            <p>Authentication ready</p>
-            <strong>Dashboard access is protected by your access token.</strong>
+            <p>Live workspace</p>
+            <strong>Draft, launch, vote, and review results from one clean dashboard.</strong>
           </div>
           <div className="preview-grid">
             <div />

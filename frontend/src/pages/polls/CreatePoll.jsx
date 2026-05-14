@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import GradientButton from "../../components/ui/GradientButton.jsx";
 import GlassCard from "../../components/ui/GlassCard.jsx";
 import PageWrapper from "../../components/layout/PageWrapper.jsx";
+import { useToast } from "../../context/ToastContext.jsx";
 import { pollService } from "../../features/polls/polls.service.js";
 import { getErrorMessage } from "../../utils/errorHandler.js";
 
 function CreatePoll() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({
     pollName: "",
@@ -40,6 +42,7 @@ function CreatePoll() {
       });
 
       const pollId = response.data?._id;
+      showToast({ type: "success", title: "Poll created", message: "Add questions before sharing it with voters." });
       navigate(pollId ? `/polls/${pollId}/builder` : "/dashboard");
     } catch (err) {
       setError(getErrorMessage(err, "Poll creation failed"));
@@ -72,7 +75,7 @@ function CreatePoll() {
 
             <label>
               Description
-              <input
+              <textarea
                 name="pollDescription"
                 value={form.pollDescription}
                 onChange={handleChange}
@@ -96,13 +99,16 @@ function CreatePoll() {
             </label>
 
             <label>
-              <input
-                name="isAnonymousAllowed"
-                type="checkbox"
-                checked={form.isAnonymousAllowed}
-                onChange={handleChange}
-              />
-              Allow anonymous voting
+              Voting access
+              <span className="toggle-row">
+                <input
+                  name="isAnonymousAllowed"
+                  type="checkbox"
+                  checked={form.isAnonymousAllowed}
+                  onChange={handleChange}
+                />
+                Allow anonymous voting
+              </span>
             </label>
 
             {error ? <p className="form-error">{error}</p> : null}

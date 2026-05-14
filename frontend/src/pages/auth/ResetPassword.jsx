@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import GradientButton from "../../components/ui/GradientButton.jsx";
 import GlassCard from "../../components/ui/GlassCard.jsx";
+import { useToast } from "../../context/ToastContext.jsx";
 import { authService } from "../../features/auth/auth.service";
 import { getErrorMessage } from "../../utils/errorHandler";
 
 function ResetPassword() {
   const { token } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,6 +21,7 @@ function ResetPassword() {
 
     try {
       await authService.resetPassword(token, { password });
+      showToast({ type: "success", title: "Password updated", message: "Please sign in again." });
       navigate("/login", { replace: true });
     } catch (err) {
       setError(getErrorMessage(err, "Could not reset password"));

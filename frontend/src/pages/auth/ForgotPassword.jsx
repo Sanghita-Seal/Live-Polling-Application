@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import GradientButton from "../../components/ui/GradientButton.jsx";
 import GlassCard from "../../components/ui/GlassCard.jsx";
+import { useToast } from "../../context/ToastContext.jsx";
 import { authService } from "../../features/auth/auth.service";
 import { getErrorMessage } from "../../utils/errorHandler";
 
@@ -10,6 +11,7 @@ function ForgotPassword() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showToast } = useToast();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,6 +22,7 @@ function ForgotPassword() {
     try {
       const response = await authService.forgotPassword({ email });
       setMessage(response.message || "Password reset email sent");
+      showToast({ type: "success", title: "Reset email sent" });
     } catch (err) {
       setError(getErrorMessage(err, "Could not send reset email"));
     } finally {
