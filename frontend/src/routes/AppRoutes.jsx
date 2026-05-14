@@ -8,6 +8,8 @@ import Register from "../pages/auth/Register.jsx";
 import ResetPassword from "../pages/auth/ResetPassword.jsx";
 import VerifyEmail from "../pages/auth/VerifyEmail.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import CreatePoll from "../pages/polls/CreatePoll.jsx";
+import PollBuilder from "../pages/polls/PollBuilder.jsx";
 
 function AppRoutes() {
   return (
@@ -28,6 +30,22 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/polls/create"
+          element={
+            <ProtectedRoute>
+              <CreatePoll />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/polls/:pollId/builder"
+          element={
+            <ProtectedRoute>
+              <PollBuilder />
             </ProtectedRoute>
           }
         />

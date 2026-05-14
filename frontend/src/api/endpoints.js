@@ -9,4 +9,13 @@ export const API_ENDPOINTS = {
     resetPassword: (token) => `/auth/reset-password/${token}`,
     me: "/auth/me",
   },
+  polls:{
+    create: "/polls",
+    myPolls: "/polls/my-polls",
+    byId: (pollId)=> `/polls/${pollId}`,
+    question: (pollId)=> `/polls/${pollId}/question`,
+    publicPoll: (shareCode)=> `/public/polls/${shareCode}`,
+    vote: "/votes",
+    analytics: (analyticsCode)=> `/public/analytics/${analyticsCode}`,
+  }
 };

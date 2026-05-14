@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import PageWrapper from "../../components/layout/PageWrapper.jsx";
 import Sidebar from "../../components/layout/Sidebar.jsx";
 import EmptyState from "../../components/ui/EmptyState.jsx";
@@ -18,9 +20,11 @@ function Dashboard() {
             <div>
               <p className="eyebrow">Dashboard</p>
               <h1>Welcome{user?.name ? `, ${user.name}` : ""}</h1>
-              <p>Authentication is connected. Poll features can be added here as your backend grows.</p>
+              <p>Create, manage, and share your live polls from here.</p>
             </div>
-            <GradientButton type="button">Create poll</GradientButton>
+            <GradientButton as={Link} to="/polls/create">
+              Create poll
+            </GradientButton>
           </section>
 
           <section className="stats-grid">
@@ -40,8 +44,13 @@ function Dashboard() {
 
           <GlassCard>
             <EmptyState
-              title="No poll backend connected yet"
-              description="When you add poll routes, create service methods and replace this area with create, vote, and result screens."
+              title="No polls created yet"
+              description="Create your first poll, add questions, then share it with voters."
+              action={
+                <GradientButton as={Link} to="/polls/create">
+                  Create poll
+                </GradientButton>
+              }
             />
           </GlassCard>
         </main>
