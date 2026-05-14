@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar.jsx";
 import GlassCard from "../../components/ui/GlassCard.jsx";
 import GradientButton from "../../components/ui/GradientButton.jsx";
 import LoadingSpinner from "../../components/ui/LoadingSpinner.jsx";
 import StatusBadge from "../../components/ui/StatusBadge.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { useToast } from "../../context/ToastContext.jsx";
 import { pollService } from "../../features/polls/polls.service.js";
 import { getErrorMessage } from "../../utils/errorHandler.js";
@@ -12,6 +13,9 @@ import { formatDateTime, getOptionId, getPollId, getVoterFingerprint } from "../
 
 function PublicPoll() {
   const { shareCode } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, isBootstrapping } = useAuth();
   const { showToast } = useToast();
   const [poll, setPoll] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -44,6 +48,17 @@ function PublicPoll() {
 
     loadPoll();
   }, [shareCode]);
+
+  useEffect(() => {
+    if (isLoading || isBootstrapping || !poll || poll.isAnonymousAllowed || isAuthenticated) {
+      return;
+    }
+
+    navigate("/login", {
+      replace: true,
+      state: { from: location },
+    });
+  }, [isAuthenticated, isBootstrapping, isLoading, location, navigate, poll]);
 
   const selectAnswer = (questionId, optionId) => {
     setAnswers((current) => ({ ...current, [questionId]: optionId }));
@@ -93,7 +108,7 @@ function PublicPoll() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isBootstrapping) {
     return <LoadingSpinner label="Loading poll" />;
   }
 

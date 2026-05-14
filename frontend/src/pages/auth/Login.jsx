@@ -15,7 +15,10 @@ function Login() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const redirectTo = location.state?.from?.pathname || "/dashboard";
+  const redirectFrom = location.state?.from;
+  const redirectTo = redirectFrom
+    ? `${redirectFrom.pathname || ""}${redirectFrom.search || ""}${redirectFrom.hash || ""}`
+    : "/dashboard";
 
   const handleChange = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
