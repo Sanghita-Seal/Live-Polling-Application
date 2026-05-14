@@ -123,6 +123,15 @@ function Dashboard() {
                     </div>
 
                     <div className="poll-actions">
+                      {poll.status === "ended" ? (
+                        <button
+                          type="button"
+                          className="ghost-button result-link-button"
+                          onClick={() => copyToClipboard(getPublicPollUrl(poll.shareCode), "Final result link")}
+                        >
+                          Copy final result link
+                        </button>
+                      ) : (
                       <button
                         type="button"
                         className="ghost-button"
@@ -130,6 +139,7 @@ function Dashboard() {
                       >
                         Copy vote link
                       </button>
+                      )}
                       <button
                         type="button"
                         className="ghost-button"

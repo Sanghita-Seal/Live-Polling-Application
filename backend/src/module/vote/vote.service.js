@@ -1,4 +1,5 @@
 import ApiError from "../../common/utils/api-error.js";
+import { expirePollIfNeeded } from "../poll/poll-expiry.service.js";
 import { Poll, Question } from "../poll/poll.model.js";
 import Vote from "./vote.model.js";
 
@@ -17,15 +18,10 @@ const submitVote = async ({
     throw ApiError.notFound("Poll not found");
   }
 
+  await expirePollIfNeeded(poll);
+
   if (poll.status !== "active") {
     throw ApiError.badRequest("Poll is not active");
-  }
-
-  if (poll.pollEndTime && poll.pollEndTime.getTime() < Date.now()) {
-    poll.status = "ended";
-    await poll.save();
-
-    throw ApiError.badRequest("Poll has ended");
   }
 
   if (!userId && !poll.isAnonymousAllowed) {

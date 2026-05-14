@@ -41,4 +41,13 @@ const updatePoll = async (req, res) => {
   ApiResponse.ok(res, "Poll updated successfully", poll);
 };
 
-export { createPoll, createQuestion, getMyPolls, getPollById , updatePoll};
+const publishResults = async (req, res) => {
+  const poll = await pollService.publishResults({
+    pollId: req.params.pollId,
+    userId: req.user.id,
+  });
+
+  ApiResponse.ok(res, "Poll results published successfully", poll);
+};
+
+export { createPoll, createQuestion, getMyPolls, getPollById, updatePoll, publishResults};

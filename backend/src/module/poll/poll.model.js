@@ -48,6 +48,14 @@ const PollSchema = new Schema(
       enum: ["draft", "active", "ended"],
       default: "draft",
     },
+    isResultPublished: {
+      type: Boolean,
+      default: false,
+    },
+    resultPublishedAt: {
+      type: Date,
+      default: null,
+    },
     totalVotes: {
       type: Number,
       default: 0,
@@ -81,6 +89,10 @@ const QuestionSchema = new Schema({
   questionNumber: {
     type: Number,
     required: true,
+  },
+  isRequired: {
+    type: Boolean,
+    default: true,
   },
   options: {
     type: [

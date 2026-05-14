@@ -24,6 +24,9 @@ export const pollService ={
     updatePoll(pollId, payload){
         return axiosClient.patch(API_ENDPOINTS.polls.byId(pollId), payload);
     },
+    publishResults(pollId){
+        return axiosClient.patch(API_ENDPOINTS.polls.publishResults(pollId));
+    },
     createQuestion(pollId, payload){
         return axiosClient.post(API_ENDPOINTS.polls.question(pollId), payload);
     },

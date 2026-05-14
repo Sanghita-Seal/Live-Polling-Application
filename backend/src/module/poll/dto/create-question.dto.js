@@ -7,6 +7,8 @@ class CreateQuestionDto extends BaseDto {
 
     questionNumber: Joi.number().integer().positive().required(),
 
+    isRequired: Joi.boolean().default(true),
+
     options: Joi.array()
       .items(
         Joi.object({

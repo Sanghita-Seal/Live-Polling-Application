@@ -156,6 +156,17 @@
   background: rgba(41, 211, 168, 0.08);
 }
 
+.result-link-button {
+  border-color: rgba(57, 217, 138, 0.58);
+  background: rgba(57, 217, 138, 0.12);
+  color: #a6f3c7;
+}
+
+.result-link-button:hover {
+  border-color: rgba(57, 217, 138, 0.82);
+  background: rgba(57, 217, 138, 0.18);
+}
+
 .icon-button {
   width: 42px;
   padding: 0;

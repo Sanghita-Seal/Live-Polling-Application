@@ -27,11 +27,18 @@ function PublicPoll() {
   const [error, setError] = useState("");
 
   const canVote = poll?.status === "active";
-  const answeredCount = Object.keys(answers).length;
-  const isComplete = questions.length > 0 && answeredCount === questions.length;
-  const hasSubmitted = questions.length > 0 && submittedQuestions.length === questions.length;
+  const requiredQuestions = questions.filter((question) => question.isRequired !== false);
+  const isComplete =
+    questions.length > 0 && requiredQuestions.every((question) => Boolean(answers[getPollId(question)]));
+  const submittedSet = useMemo(() => new Set(submittedQuestions), [submittedQuestions]);
+  const hasSubmitted =
+    questions.length > 0 &&
+    questions.every((question) => {
+      const questionId = getPollId(question);
+      return submittedSet.has(questionId) || !answers[questionId];
+    });
 
-  const votedSet = useMemo(() => new Set(submittedQuestions), [submittedQuestions]);
+  const votedSet = submittedSet;
 
   useEffect(() => {
     const loadPoll = async () => {
@@ -68,7 +75,7 @@ function PublicPoll() {
     event.preventDefault();
 
     if (!isComplete) {
-      showToast({ type: "error", title: "Answer every question first" });
+      showToast({ type: "error", title: "Answer all mandatory questions first" });
       return;
     }
 
@@ -83,6 +90,10 @@ function PublicPoll() {
         const questionId = getPollId(question);
 
         if (votedSet.has(questionId)) {
+          continue;
+        }
+
+        if (!answers[questionId]) {
           continue;
         }
 
@@ -112,6 +123,8 @@ function PublicPoll() {
     return <LoadingSpinner label="Loading poll" />;
   }
 
+  const showPublishedResults = Boolean(poll?.isResultPublished);
+
   return (
     <div className="page-shell">
       <Navbar />
@@ -127,6 +140,7 @@ function PublicPoll() {
               <p>{poll?.pollDescription}</p>
               <div className="poll-meta">
                 <span>Ends {formatDateTime(poll?.pollEndTime)}</span>
+                {showPublishedResults ? <span>Results published</span> : null}
                 <span>{poll?.isAnonymousAllowed ? "Anonymous voting allowed" : "Sign-in voting required"}</span>
               </div>
             </div>
@@ -135,7 +149,51 @@ function PublicPoll() {
 
         {error ? <p className="form-error">{error}</p> : null}
 
-        {!canVote ? (
+        {showPublishedResults ? (
+          <>
+            <GlassCard>
+              <h2>Final results</h2>
+              <div className="poll-meta">
+                <span>{poll?.totalVotes || 0} votes</span>
+                <span>{poll?.totalParticipants || 0} participants</span>
+                <span>Published {formatDateTime(poll?.resultPublishedAt)}</span>
+              </div>
+            </GlassCard>
+
+            {questions.map((question) => {
+              const total = question.options.reduce((sum, option) => sum + (option.votes || 0), 0);
+
+              return (
+                <GlassCard key={getPollId(question)}>
+                  <h2>
+                    {question.questionNumber}. {question.question}
+                  </h2>
+                  <p className="muted-text">{question.isRequired === false ? "Optional" : "Mandatory"}</p>
+
+                  <div className="analytics-list">
+                    {question.options.map((option) => {
+                      const percent = total > 0 ? Math.round(((option.votes || 0) / total) * 100) : 0;
+
+                      return (
+                        <div className="analytics-row" key={getOptionId(option)}>
+                          <div className="analytics-label">
+                            <span>{option.text}</span>
+                            <strong>
+                              {option.votes || 0} votes - {percent}%
+                            </strong>
+                          </div>
+                          <div className="analytics-bar">
+                            <span style={{ width: `${percent}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </GlassCard>
+              );
+            })}
+          </>
+        ) : !canVote ? (
           <GlassCard>
             <h2>This poll is not accepting votes</h2>
             <p className="muted-text">The owner has not started it yet, or it has already ended.</p>
@@ -186,6 +244,7 @@ function PublicPoll() {
                   <h2>
                     {question.questionNumber}. {question.question}
                   </h2>
+                  <p className="muted-text">{question.isRequired === false ? "Optional" : "Mandatory"}</p>
                   <div className="option-grid">
                     {question.options.map((option) => {
                       const optionId = getOptionId(option);

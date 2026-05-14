@@ -20,6 +20,8 @@ router.patch(
 
 router.get("/:pollId", authenticate, controller.getPollById);
 
+router.patch("/:pollId/publish-results", authenticate, controller.publishResults);
+
 router.post("/:pollId/question", authenticate, validate(CreateQuestionDto), controller.createQuestion);
 
 

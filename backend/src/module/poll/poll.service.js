@@ -1,4 +1,5 @@
 import ApiError from "../../common/utils/api-error.js";
+import { expireActivePolls, expirePollIfNeeded } from "./poll-expiry.service.js";
 import { Poll, Question } from "./poll.model.js";
 
 const createPoll = async ({
@@ -24,6 +25,7 @@ const createQuestion = async ({
   userId,
   question,
   questionNumber,
+  isRequired,
   options,
 }) => {
   const poll = await Poll.findOne({ _id: pollId, createdBy: userId });
@@ -49,6 +51,7 @@ const createQuestion = async ({
     pollId,
     question,
     questionNumber,
+    isRequired,
     options,
   });
 
@@ -56,6 +59,7 @@ const createQuestion = async ({
 };
 
 const getMyPolls = async (userId) => {
+  await expireActivePolls();
   const polls = await Poll.find({ createdBy: userId }).sort({ createdAt: -1 });
 
   return polls;
@@ -67,6 +71,8 @@ const getPollById = async ({ pollId, userId }) => {
   if (!poll) {
     throw ApiError.notFound("Poll not found");
   }
+
+  await expirePollIfNeeded(poll);
 
   const questions = await Question.find({ pollId }).sort({ questionNumber: 1 });
 
@@ -132,4 +138,29 @@ const updatePoll = async ({
   return poll.save();
 };
 
-export { createPoll, createQuestion, getMyPolls, getPollById, updatePoll };
+const publishResults = async ({ pollId, userId }) => {
+  const poll = await Poll.findOne({ _id: pollId, createdBy: userId });
+
+  if (!poll) {
+    throw ApiError.notFound("Poll not found");
+  }
+
+  await expirePollIfNeeded(poll);
+
+  const questionCount = await Question.countDocuments({ pollId });
+
+  if (questionCount === 0) {
+    throw ApiError.badRequest("Add at least one question before publishing results");
+  }
+
+  if (poll.status !== "ended") {
+    throw ApiError.badRequest("End the poll before publishing results");
+  }
+
+  poll.isResultPublished = true;
+  poll.resultPublishedAt = new Date();
+
+  return poll.save();
+};
+
+export { createPoll, createQuestion, getMyPolls, getPollById, updatePoll, publishResults };

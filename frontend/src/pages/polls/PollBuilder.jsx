@@ -24,6 +24,7 @@ function PollBuilder() {
   });
   const [form, setForm] = useState({
     question: "",
+    isRequired: true,
     options: ["", ""],
   });
   const [error, setError] = useState("");
@@ -32,6 +33,7 @@ function PollBuilder() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [isChangingStatus, setIsChangingStatus] = useState(false);
+  const [isPublishingResults, setIsPublishingResults] = useState(false);
 
   useEffect(() => {
     const loadPoll = async () => {
@@ -65,9 +67,11 @@ function PollBuilder() {
   };
 
   const handleQuestionChange = (event) => {
+    const { checked, name, type, value } = event.target;
+
     setForm((current) => ({
       ...current,
-      question: event.target.value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -140,6 +144,21 @@ function PollBuilder() {
     showToast({ type: "error", title: "Copy failed", message: "Please copy the link manually." });
   };
 
+  const publishResults = async () => {
+    setIsPublishingResults(true);
+    setError("");
+
+    try {
+      const response = await pollService.publishResults(pollId);
+      setPoll(response.data);
+      showToast({ type: "success", title: "Results published", message: "The public poll link now shows final results." });
+    } catch (err) {
+      setError(getErrorMessage(err, "Failed to publish results"));
+    } finally {
+      setIsPublishingResults(false);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
@@ -149,6 +168,7 @@ function PollBuilder() {
       const payload = {
         question: form.question,
         questionNumber: questions.length + 1,
+        isRequired: form.isRequired,
         options: form.options.map((option, index) => ({
           text: option,
           order: index + 1,
@@ -160,6 +180,7 @@ function PollBuilder() {
       setQuestions((current) => [...current, response.data]);
       setForm({
         question: "",
+        isRequired: true,
         options: ["", ""],
       });
       showToast({ type: "success", title: "Question added" });
@@ -216,22 +237,39 @@ function PollBuilder() {
             </div>
 
             <div className="poll-actions">
-              {poll?.status !== "active" ? (
+              {poll?.status === "draft" ? (
                 <GradientButton type="button" onClick={() => changeStatus("active")} isLoading={isChangingStatus}>
                   Start poll
                 </GradientButton>
-              ) : (
+              ) : null}
+              {poll?.status === "active" ? (
                 <GradientButton type="button" onClick={() => changeStatus("ended")} isLoading={isChangingStatus}>
                   End poll
                 </GradientButton>
+              ) : null}
+              {poll?.status === "ended" && !poll?.isResultPublished ? (
+                <GradientButton type="button" onClick={publishResults} isLoading={isPublishingResults}>
+                  Publish results
+                </GradientButton>
+              ) : null}
+              {poll?.isResultPublished ? <span className="muted-text">Results published</span> : null}
+              {poll?.status === "ended" ? (
+                <button
+                  type="button"
+                  className="ghost-button result-link-button"
+                  onClick={() => copyToClipboard(getPublicPollUrl(poll?.shareCode), "Final result link")}
+                >
+                  Copy final result link
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="ghost-button"
+                  onClick={() => copyToClipboard(getPublicPollUrl(poll?.shareCode), "Vote link")}
+                >
+                  Copy vote link
+                </button>
               )}
-              <button
-                type="button"
-                className="ghost-button"
-                onClick={() => copyToClipboard(getPublicPollUrl(poll?.shareCode), "Vote link")}
-              >
-                Copy vote link
-              </button>
               <button
                 type="button"
                 className="ghost-button"
@@ -319,12 +357,26 @@ function PollBuilder() {
               <label>
                 Question
                 <input
+                  name="question"
                   value={form.question}
                   onChange={handleQuestionChange}
                   minLength={3}
                   maxLength={300}
                   required
                 />
+              </label>
+
+              <label>
+                Requirement
+                <span className="toggle-row">
+                  <input
+                    name="isRequired"
+                    type="checkbox"
+                    checked={form.isRequired}
+                    onChange={handleQuestionChange}
+                  />
+                  Mandatory question
+                </span>
               </label>
 
               {form.options.map((option, index) => (
@@ -382,6 +434,7 @@ function PollBuilder() {
                   <h3>
                     {question.questionNumber}. {question.question}
                   </h3>
+                  <p className="muted-text">{question.isRequired ? "Mandatory" : "Optional"}</p>
 
                   <ul>
                     {question.options.map((option) => (
