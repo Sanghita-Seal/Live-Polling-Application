@@ -30,6 +30,7 @@ const getPollById = async (req, res) => {
     pollId: req.params.pollId,
     userId: req.user.id,
   });
+  ApiResponse.ok(res, "Poll fetched successfully", poll);
 };
 const updatePoll = async (req, res) => {
   const poll = await pollService.updatePoll({
