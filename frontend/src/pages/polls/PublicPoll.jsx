@@ -22,7 +22,6 @@ function PublicPoll() {
   const [answers, setAnswers] = useState({});
   const [voter, setVoter] = useState({ firstName: "", lastName: "" });
   const [submittedQuestions, setSubmittedQuestions] = useState([]);
-  const [submittingQuestionIds, setSubmittingQuestionIds] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -32,7 +31,6 @@ function PublicPoll() {
   const isComplete =
     questions.length > 0 && requiredQuestions.every((question) => Boolean(answers[getPollId(question)]));
   const submittedSet = useMemo(() => new Set(submittedQuestions), [submittedQuestions]);
-  const submittingSet = useMemo(() => new Set(submittingQuestionIds), [submittingQuestionIds]);
   const hasSubmitted =
     questions.length > 0 &&
     submittedQuestions.length > 0 &&
@@ -83,53 +81,14 @@ function PublicPoll() {
     });
   };
 
-  const submitQuestionVote = async (questionId, optionId) => {
-    if (votedSet.has(questionId) || submittingSet.has(questionId)) {
-      return;
-    }
-
-    setSubmittingQuestionIds((current) => [...current, questionId]);
-    setError("");
-
-    try {
-      await pollService.submitVote(
-        {
-          pollId: getPollId(poll),
-          questionId,
-          optionId,
-          userFingerPrint: getVoterFingerprint(),
-          firstName: voter.firstName || undefined,
-          lastName: voter.lastName || undefined,
-        },
-        {
-          skipAuth: Boolean(poll?.isAnonymousAllowed),
-          skipRefresh: Boolean(poll?.isAnonymousAllowed),
-        },
-      );
-
-      markQuestionSubmitted(questionId);
-      showToast({ type: "success", title: "Vote recorded" });
-    } catch (err) {
-      setAnswers((current) => {
-        const next = { ...current };
-        delete next[questionId];
-        return next;
-      });
-      setError(getErrorMessage(err, "Vote submission failed"));
-    } finally {
-      setSubmittingQuestionIds((current) => current.filter((id) => id !== questionId));
-    }
-  };
-
   const selectAnswer = (questionId, optionId) => {
     setAnswers((current) => ({ ...current, [questionId]: optionId }));
-    submitQuestionVote(questionId, optionId);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!isComplete && !hasPendingAnswers) {
+    if (!isComplete) {
       showToast({ type: "error", title: "Answer all mandatory questions first" });
       return;
     }
@@ -309,19 +268,17 @@ function PublicPoll() {
                     {question.options.map((option) => {
                       const optionId = getOptionId(option);
                       const isSubmitted = submittedSet.has(questionId);
-                      const isSubmittingQuestion = submittingSet.has(questionId);
                       return (
                         <label className="option-tile" key={optionId}>
                           <input
                             type="radio"
                             name={questionId}
                             checked={answers[questionId] === optionId}
-                            disabled={isSubmitted || isSubmittingQuestion}
+                            disabled={isSubmitted || isSubmitting}
                             onChange={() => selectAnswer(questionId, optionId)}
                           />
                           <span>
                             {option.text}
-                            {answers[questionId] === optionId && isSubmittingQuestion ? " - recording..." : ""}
                             {answers[questionId] === optionId && isSubmitted ? " - recorded" : ""}
                           </span>
                         </label>
@@ -332,7 +289,11 @@ function PublicPoll() {
               );
             })}
 
-            <GradientButton type="submit" isLoading={isSubmitting} disabled={!hasPendingAnswers || hasSubmitted}>
+            <GradientButton
+              type="submit"
+              isLoading={isSubmitting}
+              disabled={!isComplete || !hasPendingAnswers || hasSubmitted}
+            >
               Submit selected votes
             </GradientButton>
           </form>
