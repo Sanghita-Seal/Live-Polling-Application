@@ -1,10 +1,10 @@
-# Live Poll
+# PollSync
 
 **Deployed Link:** _Add deployed frontend URL here_
 
 **Demo Video:** _Add demo video URL here_
 
-Live Poll is a full-stack polling application where creators can build polls, share vote links, collect responses, watch creator-only realtime updates, and publish final results. It includes authentication, protected creator dashboards, public voting pages, analytics links, Socket.io-powered live updates, and chart-based result views.
+PollSync is a full-stack polling application where creators can build polls, share vote links, collect responses, watch creator-only realtime updates, and publish final results. It includes authentication, protected creator dashboards, public voting pages, analytics links, Socket.io-powered live updates, and chart-based result views.
 
 ## Features
 
@@ -49,7 +49,7 @@ Live Poll is a full-stack polling application where creators can build polls, sh
 ## Project Structure
 
 ```txt
-Live Poll/
+PollSync/
 ├── backend/
 │   ├── src/
 │   │   ├── common/
@@ -92,7 +92,7 @@ Live Poll/
 
 ```bash
 git clone <your-repository-url>
-cd "Live Poll"
+cd "PollSync"
 ```
 
 ### 2. Start MongoDB
@@ -138,8 +138,8 @@ SMTP_HOST=sandbox.smtp.mailtrap.io
 SMTP_PORT=2525
 SMTP_USER=replace_with_smtp_user
 SMTP_PASS=replace_with_smtp_password
-SMTP_FROM_NAME=Live Poll
-SMTP_FROM_EMAIL=noreply@livepoll.com
+SMTP_FROM_NAME=PollSync
+SMTP_FROM_EMAIL=noreply@pollsync.com
 ```
 
 Required backend variables:

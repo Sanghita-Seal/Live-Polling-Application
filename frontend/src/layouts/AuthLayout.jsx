@@ -5,7 +5,7 @@ function AuthLayout() {
     <main className="auth-layout">
       <section className="auth-hero">
         <Link to="/" className="brand">
-          Live Poll
+          PollSync
         </Link>
         <div>
           <p className="eyebrow">Realtime decisions</p>
