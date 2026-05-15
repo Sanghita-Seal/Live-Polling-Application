@@ -5,7 +5,7 @@ function AuthLayout() {
     <main className="auth-layout">
       <section className="auth-hero">
         <Link to="/" className="brand">
-          PollSync
+          <img src="/pollsync-logo.svg" alt="PollSync" className="brand-logo" />
         </Link>
         <div>
           <p className="eyebrow">Realtime decisions</p>

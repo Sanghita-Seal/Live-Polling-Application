@@ -363,7 +363,7 @@ function Home() {
 
       <footer className="landing-footer">
         <Link to="/" className="brand">
-          PollSync
+          <img src="/pollsync-logo.svg" alt="PollSync" className="brand-logo" />
         </Link>
         <nav aria-label="Footer navigation">
           <a href="#features">Product</a>

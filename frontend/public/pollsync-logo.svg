@@ -1,0 +1,33 @@
+<svg width="780" height="190" viewBox="0 0 780 190" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">PollSync logo</title>
+  <desc id="desc">PollSync wordmark with a gradient chat, poll bars, and check mark icon.</desc>
+  <defs>
+    <linearGradient id="iconGradient" x1="26" y1="38" x2="184" y2="154" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6d35ff"/>
+      <stop offset="0.5" stop-color="#2f7cff"/>
+      <stop offset="1" stop-color="#00d5ff"/>
+    </linearGradient>
+    <linearGradient id="wordGradient" x1="365" y1="58" x2="690" y2="142" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eef4ff"/>
+      <stop offset="0.42" stop-color="#eef4ff"/>
+      <stop offset="0.43" stop-color="#19b8ff"/>
+      <stop offset="1" stop-color="#008cff"/>
+    </linearGradient>
+    <filter id="softGlow" x="0" y="0" width="780" height="190" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#009dff" flood-opacity="0.24"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softGlow)">
+    <path d="M37 47C37 34.8497 46.8497 25 59 25H168C180.15 25 190 34.8497 190 47V122C190 134.15 180.15 144 168 144H83L55 169V144C44.9543 142.165 37 133.36 37 122V47Z" fill="url(#iconGradient)"/>
+    <path d="M62 106H78V88C78 84.6863 80.6863 82 84 82H103V62C103 58.6863 105.686 56 109 56H128V39C128 35.6863 130.686 33 134 33H153C156.314 33 159 35.6863 159 39V122H62V106Z" fill="#071017" fill-opacity="0.55"/>
+    <path d="M72 105L105 135L200 34" stroke="#111827" stroke-opacity="0.45" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M72 100L105 130L200 29" stroke="url(#iconGradient)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M72 100L105 130L200 29" stroke="#dff8ff" stroke-opacity="0.42" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <text x="235" y="124" fill="url(#wordGradient)" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="84" font-weight="900" letter-spacing="-3">PollSync</text>
+  </g>
+</svg>

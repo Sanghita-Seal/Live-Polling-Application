@@ -41,6 +41,12 @@
   font-weight: 900;
 }
 
+.brand-logo {
+  display: block;
+  width: 156px;
+  height: auto;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -788,15 +794,16 @@ body {
 }
 
 .brand::before {
-  width: 28px;
-  height: 28px;
-  border: 1px solid rgba(41, 211, 168, 0.36);
-  border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgba(41, 211, 168, 0.96), rgba(122, 167, 255, 0.96)),
-    var(--panel);
-  box-shadow: 0 12px 28px rgba(41, 211, 168, 0.14);
-  content: "";
+  content: none;
+}
+
+.navbar .brand-logo,
+.landing-footer .brand-logo {
+  width: 154px;
+}
+
+.auth-hero .brand-logo {
+  width: 172px;
 }
 
 .nav-links a {

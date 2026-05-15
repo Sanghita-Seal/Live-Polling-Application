@@ -9,7 +9,7 @@ function Navbar({ variant = "app" }) {
   return (
     <header className={`navbar ${isLanding ? "landing-navbar" : ""}`}>
       <Link to="/" className="brand">
-        PollSync
+        <img src="/pollsync-logo.svg" alt="PollSync" className="brand-logo" />
       </Link>
 
       <nav className="nav-links" aria-label="Main navigation">
