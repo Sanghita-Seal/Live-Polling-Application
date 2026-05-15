@@ -1,6 +1,6 @@
 # PollSync
 
-**Deployed Link:** _Add deployed frontend URL here_
+**Deployed Link:** https://live-polling-application-rose.vercel.app/
 
 **Demo Video:** _Add demo video URL here_
 
