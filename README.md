@@ -2,7 +2,7 @@
 
 **Deployed Link:** https://live-polling-application-rose.vercel.app/
 
-**Demo Video:** _Add demo video URL here_
+**Demo Video:** [PollSync Demo Video](https://youtu.be/UuwhDjnZ1XY?si=Ne03i5IGWVGnsAbJ)
 
 PollSync is a full-stack polling application where creators can build polls, share vote links, collect responses, watch creator-only realtime updates, and publish final results. It includes authentication, protected creator dashboards, public voting pages, analytics links, Socket.io-powered live updates, and chart-based result views.
 
